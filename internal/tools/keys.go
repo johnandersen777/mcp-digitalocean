@@ -23,8 +23,8 @@ func NewKeysTool(client *godo.Client) *KeysTool {
 
 // CreateKey creates a new SSH key
 func (k *KeysTool) CreateKey(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	name := req.Params.Arguments["Name"].(string)
-	publicKey := req.Params.Arguments["PublicKey"].(string)
+	name := req.GetString("Name", "")
+	publicKey := req.GetString("PublicKey", "")
 
 	key, _, err := k.client.Keys.Create(ctx, &godo.KeyCreateRequest{
 		Name:      name,
@@ -44,7 +44,7 @@ func (k *KeysTool) CreateKey(ctx context.Context, req mcp.CallToolRequest) (*mcp
 
 // DeleteKey deletes an SSH key by ID
 func (k *KeysTool) DeleteKey(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	keyID := int(req.Params.Arguments["ID"].(float64))
+	keyID := req.GetInt("ID", 0)
 
 	_, err := k.client.Keys.DeleteByID(ctx, keyID)
 	if err != nil {

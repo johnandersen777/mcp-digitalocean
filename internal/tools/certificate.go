@@ -23,10 +23,10 @@ func NewCertificateTool(client *godo.Client) *CertificateTool {
 
 // CreateCertificate creates a new certificate
 func (c *CertificateTool) CreateCertificate(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	name := req.Params.Arguments["Name"].(string)
-	privateKey := req.Params.Arguments["PrivateKey"].(string)
-	leafCertificate := req.Params.Arguments["LeafCertificate"].(string)
-	certificateChain := req.Params.Arguments["CertificateChain"].(string)
+	name := req.GetString("Name", "")
+	privateKey := req.GetString("PrivateKey", "")
+	leafCertificate := req.GetString("LeafCertificate", "")
+	certificateChain := req.GetString("CertificateChain", "")
 
 	certRequest := &godo.CertificateRequest{
 		Name:             name,
@@ -51,7 +51,7 @@ func (c *CertificateTool) CreateCertificate(ctx context.Context, req mcp.CallToo
 
 // DeleteCertificate deletes a certificate
 func (c *CertificateTool) DeleteCertificate(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	certID := req.Params.Arguments["ID"].(string)
+	certID := req.GetString("ID", "")
 	_, err := c.client.Certificates.Delete(ctx, certID)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (c *CertificateTool) DeleteCertificate(ctx context.Context, req mcp.CallToo
 
 // GetCertificate retrieves a certificate by ID
 func (c *CertificateTool) GetCertificate(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	certID := req.Params.Arguments["ID"].(string)
+	certID := req.GetString("ID", "")
 	certificate, _, err := c.client.Certificates.Get(ctx, certID)
 	if err != nil {
 		return nil, err

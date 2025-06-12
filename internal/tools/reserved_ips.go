@@ -24,8 +24,8 @@ func NewReservedIPTool(client *godo.Client) *ReservedIPTool {
 
 // ReserveIP reserves a new IPv4 or IPv6
 func (t *ReservedIPTool) ReserveIP(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	region := req.Params.Arguments["Region"].(string)
-	ipType := req.Params.Arguments["Type"].(string) // "ipv4" or "ipv6"
+	region := req.GetString("Region", "")
+	ipType := req.GetString("Type", "") // "ipv4" or "ipv6"
 
 	var reservedIP any
 	var err error
@@ -53,8 +53,8 @@ func (t *ReservedIPTool) ReserveIP(ctx context.Context, req mcp.CallToolRequest)
 
 // ReleaseIP releases a reserved IPv4 or IPv6
 func (t *ReservedIPTool) ReleaseIP(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	ip := req.Params.Arguments["IP"].(string)
-	ipType := req.Params.Arguments["Type"].(string) // "ipv4" or "ipv6"
+	ip := req.GetString("IP", "")
+	ipType := req.GetString("Type", "") // "ipv4" or "ipv6"
 
 	var err error
 	switch ipType {
@@ -75,9 +75,9 @@ func (t *ReservedIPTool) ReleaseIP(ctx context.Context, req mcp.CallToolRequest)
 
 // AssignIP assigns a reserved IP to a droplet
 func (t *ReservedIPTool) AssignIP(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	ip := req.Params.Arguments["IP"].(string)
-	dropletID := int(req.Params.Arguments["DropletID"].(float64))
-	ipType := req.Params.Arguments["Type"].(string) // "ipv4" or "ipv6"
+	ip := req.GetString("IP", "")
+	dropletID := req.GetInt("DropletID", 0)
+	ipType := req.GetString("Type", "") // "ipv4" or "ipv6"
 
 	var action *godo.Action
 	var err error
@@ -105,8 +105,8 @@ func (t *ReservedIPTool) AssignIP(ctx context.Context, req mcp.CallToolRequest) 
 
 // UnassignIP unassigns a reserved IP from a droplet
 func (t *ReservedIPTool) UnassignIP(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	ip := req.Params.Arguments["IP"].(string)
-	ipType := req.Params.Arguments["Type"].(string) // "ipv4" or "ipv6"
+	ip := req.GetString("IP", "")
+	ipType := req.GetString("Type", "") // "ipv4" or "ipv6"
 
 	var action *godo.Action
 	var err error

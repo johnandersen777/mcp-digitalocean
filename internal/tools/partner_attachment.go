@@ -20,9 +20,9 @@ func NewPartnerAttachmentTool(client *godo.Client) *PartnerAttachmentTool {
 }
 
 func (p *PartnerAttachmentTool) CreatePartnerAttachment(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	name := req.Params.Arguments["Name"].(string)
-	region := req.Params.Arguments["Region"].(string)
-	bandwidth := int(req.Params.Arguments["Bandwidth"].(float64))
+	name := req.GetString("Name", "")
+	region := req.GetString("Region", "")
+	bandwidth := req.GetInt("Bandwidth", 0)
 
 	createRequest := &godo.PartnerAttachmentCreateRequest{
 		Name:                      name,
@@ -44,7 +44,7 @@ func (p *PartnerAttachmentTool) CreatePartnerAttachment(ctx context.Context, req
 }
 
 func (p *PartnerAttachmentTool) DeletePartnerAttachment(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := req.Params.Arguments["ID"].(string)
+	id := req.GetString("ID", "")
 	_, err := p.client.PartnerAttachment.Delete(ctx, id)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (p *PartnerAttachmentTool) DeletePartnerAttachment(ctx context.Context, req
 }
 
 func (p *PartnerAttachmentTool) GetServiceKey(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := req.Params.Arguments["ID"].(string)
+	id := req.GetString("ID", "")
 	serviceKey, _, err := p.client.PartnerAttachment.GetServiceKey(ctx, id)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (p *PartnerAttachmentTool) GetServiceKey(ctx context.Context, req mcp.CallT
 }
 
 func (p *PartnerAttachmentTool) GetBGPConfig(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := req.Params.Arguments["ID"].(string)
+	id := req.GetString("ID", "")
 	bgpAuthKey, _, err := p.client.PartnerAttachment.GetBGPAuthKey(ctx, id)
 	if err != nil {
 		return nil, err
@@ -83,9 +83,9 @@ func (p *PartnerAttachmentTool) GetBGPConfig(ctx context.Context, req mcp.CallTo
 }
 
 func (p *PartnerAttachmentTool) UpdatePartnerAttachment(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	id := req.Params.Arguments["ID"].(string)
-	name := req.Params.Arguments["Name"].(string)
-	vpcIDs := req.Params.Arguments["VPCIDs"].([]string)
+	id := req.GetString("ID", "")
+	name := req.GetString("Name", "")
+	vpcIDs := req.GetStringSlice("VPCIDs", nil)
 
 	updateRequest := &godo.PartnerAttachmentUpdateRequest{
 		Name:   name,

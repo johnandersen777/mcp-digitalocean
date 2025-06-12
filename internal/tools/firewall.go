@@ -23,20 +23,15 @@ func NewFirewallTool(client *godo.Client) *FirewallTool {
 
 // CreateFirewall creates a new firewall
 func (f *FirewallTool) CreateFirewall(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	name := req.Params.Arguments["Name"].(string)
-	inboundProtocol := req.Params.Arguments["InboundProtocol"].(string)
-	inboundPortRange := req.Params.Arguments["InboundPortRange"].(string)
-	inboundSource := req.Params.Arguments["InboundSource"].(string)
-	outboundProtocol := req.Params.Arguments["OutboundProtocol"].(string)
-	outboundPortRange := req.Params.Arguments["OutboundPortRange"].(string)
-	outboundDestination := req.Params.Arguments["OutboundDestination"].(string)
-	dropletIDs := req.Params.Arguments["DropletIDs"].([]float64)
-	tags := req.Params.Arguments["Tags"].([]string)
-
-	dIDs := make([]int, len(dropletIDs))
-	for i, v := range dropletIDs {
-		dIDs[i] = int(v)
-	}
+	name := req.GetString("Name", "")
+	inboundProtocol := req.GetString("InboundProtocol", "")
+	inboundPortRange := req.GetString("InboundPortRange", "")
+	inboundSource := req.GetString("InboundSource", "")
+	outboundProtocol := req.GetString("OutboundProtocol", "")
+	outboundPortRange := req.GetString("OutboundPortRange", "")
+	outboundDestination := req.GetString("OutboundDestination", "")
+	dropletIDs := req.GetIntSlice("DropletIDs", nil)
+	tags := req.GetStringSlice("Tags", nil)
 
 	inboundRule := godo.InboundRule{
 		Protocol:  inboundProtocol,
@@ -54,7 +49,7 @@ func (f *FirewallTool) CreateFirewall(ctx context.Context, req mcp.CallToolReque
 		Name:          name,
 		InboundRules:  []godo.InboundRule{inboundRule},
 		OutboundRules: []godo.OutboundRule{outboundRule},
-		DropletIDs:    dIDs,
+		DropletIDs:    dropletIDs,
 		Tags:          tags,
 	}
 
@@ -73,7 +68,7 @@ func (f *FirewallTool) CreateFirewall(ctx context.Context, req mcp.CallToolReque
 
 // DeleteFirewall deletes a firewall
 func (f *FirewallTool) DeleteFirewall(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	firewallID := req.Params.Arguments["ID"].(string)
+	firewallID := req.GetString("ID", "")
 	_, err := f.client.Firewalls.Delete(ctx, firewallID)
 	if err != nil {
 		return nil, err
