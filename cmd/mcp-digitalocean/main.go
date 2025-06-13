@@ -6,6 +6,7 @@ import (
 	registry "mcp-digitalocean/internal"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/digitalocean/godo"
@@ -41,6 +42,17 @@ func main() {
 	}
 
 	client := godo.NewFromToken(token)
+
+	// Set client.BaseURL from DO_BASE_URL if present
+	if baseURL := os.Getenv("DO_BASE_URL"); baseURL != "" {
+		parsedURL, err := url.Parse(baseURL)
+		if err != nil {
+			slog.Error("Invalid DO_BASE_URL", "error", err)
+			os.Exit(1)
+		}
+		client.BaseURL = parsedURL
+	}
+
 	s := server.NewMCPServer(mcpName, mcpVersion)
 
 	// Register the tools and resources
